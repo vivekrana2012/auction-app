@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.personnel.auction.entity.PropertyFile;
 import com.personnel.auction.utils.Constants;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class WebScraper {
+
+    private final PropertyFileService propertyFileService;
+
+    public WebScraper(PropertyFileService propertyFileService) {
+        this.propertyFileService = propertyFileService;
+    }
 
     void scrape() {
 
@@ -46,7 +54,9 @@ public class WebScraper {
                     String[] splits = anchor.getHrefAttribute()
                             .split("/");
 
-                    File file = new File(Constants.DOWNLOAD_PREFIX + splits[splits.length - 1]);
+                    String fileName = splits[splits.length - 1];
+
+                    File file = new File(Constants.DOWNLOAD_PREFIX + fileName);
 
                     try (InputStream downloadedContent = clickedPage.getWebResponse()
                             .getContentAsStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -58,6 +68,12 @@ public class WebScraper {
                         }
 
                     }
+
+                    propertyFileService.save(PropertyFile.builder()
+                            .filename(fileName)
+                            .timestamp(LocalDateTime.now())
+                            .build());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
