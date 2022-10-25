@@ -17,6 +17,12 @@ import java.util.Locale;
 @Service
 public class PdfThingy {
 
+    private final PropertyService propertyService;
+
+    public PdfThingy(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
+
     public void doYourThing(String filePath) {
 
         System.out.println("FilePath - " + filePath);
@@ -67,8 +73,7 @@ public class PdfThingy {
                                     .timestamp(LocalDateTime.now())
                                     .filename(fileName)
                                     .auctionDate(auctionDate)
-                                    .priceByArea(number(table.getText(i, 7))
-                                            / number(table.getText(i, 4)))
+                                    .priceByArea(number(table.getText(i, 7)) / number(table.getText(i, 4)))
                                     .build());
                         }
                     }
@@ -76,16 +81,13 @@ public class PdfThingy {
             }
         }
 
-        properties.stream()
-                .map(Property::toString)
-                .forEach(System.out::println);
+        propertyService.saveAll(properties);
     }
 
     private LocalDate getAuctionDate(String headerRow) {
 
         try {
-            return LocalDate.parse(headerRow.split("Dated- ")[1],
-                    DateTimeFormatter.ofPattern("dd.MMM.yyyy", Locale.US));
+            return LocalDate.parse(headerRow.split("Dated- ")[1], DateTimeFormatter.ofPattern("dd.MMM.yyyy", Locale.US));
         } catch (ArrayIndexOutOfBoundsException | DateTimeParseException ex) {
             return getOldAuctionDate(headerRow);
         }
@@ -93,8 +95,7 @@ public class PdfThingy {
 
     private LocalDate getOldAuctionDate(String headerRow) {
         return LocalDate.parse(headerRow.toLowerCase(Locale.ROOT)
-                        .split("dated ")[1],
-                DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.US));
+                .split("dated ")[1], DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.US));
     }
 
     private boolean isNumber(String str) {

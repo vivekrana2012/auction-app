@@ -4,7 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -14,6 +17,9 @@ import java.time.LocalDateTime;
 @Builder
 public class Property {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
     private String serialNumber;
     private String estate;
     private String plotNumber;

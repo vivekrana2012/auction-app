@@ -1,1 +1,6 @@
 
+spring:
+  datasource:
+    url: jdbc:postgresql://svc-postres/test
+    username: test
+    password: test
